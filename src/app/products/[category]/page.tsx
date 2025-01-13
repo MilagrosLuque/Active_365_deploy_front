@@ -1,8 +1,13 @@
-import { getProductsByCategoryOrName } from '@/app/api/getProducts';
-import Card from '@/components/productsCard/Card';
-import React from 'react';
+import { getProductsByCategoryOrName } from "@/app/api/getProducts";
+import Card from "@/components/productsCard/Card";
 
-const Products: React.FC<{ params: { category: string } }> = async ({ params }) => {
+interface ProductsProps {
+  params: {
+    category: string;
+  };
+}
+
+const Products = async ({ params }: ProductsProps) => {
   const { category } = params;
   const products = await getProductsByCategoryOrName(category);
 
@@ -11,7 +16,7 @@ const Products: React.FC<{ params: { category: string } }> = async ({ params }) 
       <h1 className="text-2xl font-bold text-center mb-6">Our Products</h1>
       <div className="flex flex-wrap justify-center">
         {products.length > 0 ? (
-          <Card 
+          <Card
             products={products} 
             onProductSelect={() => {}} 
             isUserLoggedIn={false} 
