@@ -1,21 +1,8 @@
 import { getProductsByCategoryOrName } from '@/app/api/getProducts';
 import Card from '@/components/productsCard/Card';
-import { Metadata } from 'next';
 import React from 'react';
 
-// Definimos el tipo para los parámetros dinámicos
-type PageProps = {
-  params: {
-    category: string;
-  };
-};
-
-// Definir el metadata opcional
-export const metadata: Metadata = {
-  title: 'Products Page',
-};
-
-const Products: React.FC<PageProps> = async ({ params }) => {
+const Products: React.FC<{ params: { category: string } }> = async ({ params }) => {
   const { category } = params;
   const products = await getProductsByCategoryOrName(category);
 
@@ -27,7 +14,7 @@ const Products: React.FC<PageProps> = async ({ params }) => {
           <Card
             products={products}
             onProductSelect={() => {}}
-            isUserLoggedIn={false}
+            isUserLoggedIn={false} 
           />
         ) : (
           <div className="text-gray-500">Products not found</div>
