@@ -7,7 +7,6 @@ import { Toaster } from "react-hot-toast";
 import { getProductById, getProductsByCategory } from "@/app/api/getProducts"; // Importamos la función getProductsByCategory
 import AddToCart from "@/components/AddToCart";
 import { UserContext } from "@/context/UserContext";
-import Loader from "@/components/Loader";
 import Link from "next/link";
 
 const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -17,8 +16,7 @@ const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
 
     const [product, setProduct] = useState<IProducts | null>(null);
     const [allProducts, setAllProducts] = useState<IProducts[]>([]); // Para almacenar todos los productos
-    const [selectedCategory, setSelectedCategory] = useState<string>(""); // Categoría seleccionada
-    const [loading, setLoading] = useState<boolean>(true);
+    const [selectedCategory] = useState<string>(""); // Categoría seleccionada
     const [rating, setRating] = useState<number>(0); // Estado para la calificación por estrellas
 
     const user = useContext(UserContext);
@@ -33,8 +31,6 @@ const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
                 setProduct(fetchedProduct); // Guardamos el producto en el estado
             } catch (error) {
                 console.error("Failed to fetch product:", error);
-            } finally {
-                setLoading(false);
             }
         };
 

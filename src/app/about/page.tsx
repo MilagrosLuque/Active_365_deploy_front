@@ -14,7 +14,7 @@ const GymCard: React.FC<{
   createdAt: Date;
   imageUrl: string;
   gymId: string;
-}> = ({ name, email, phone, address, city, latitude, longitude, createdAt, imageUrl, gymId }) => {
+}> = ({ name, email, phone, address, city, latitude, longitude, createdAt, imageUrl, }) => {
   const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
 
   return (
