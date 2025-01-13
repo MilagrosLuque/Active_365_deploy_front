@@ -2,7 +2,7 @@ type CategoryName = "Nutritional Supplements" | "Sports Apparel" | "Home Equipme
 
 
 export interface IProducts {
-    subcategory: string;
+    subcategory?: string;
     id: number;
     name: string;
     description: string;

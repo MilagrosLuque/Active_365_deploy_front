@@ -4,10 +4,9 @@ import { use } from "react";
 import DetailCard from "@/components/detailCard/DetailCard";
 import { IProducts } from "@/interfaces/IProducts";
 import { Toaster } from "react-hot-toast";
-import { getProductById, getProductsByCategory } from "@/app/api/getProducts";  // Importamos la función getProductsByCategory
+import { getProductById, getProductsByCategory } from "@/app/api/getProducts"; // Importamos la función getProductsByCategory
 import AddToCart from "@/components/AddToCart";
 import { UserContext } from "@/context/UserContext";
-import Loader from "@/components/Loader";
 import Link from "next/link";
 
 const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -17,8 +16,8 @@ const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
 
     const [product, setProduct] = useState<IProducts | null>(null);
     const [allProducts, setAllProducts] = useState<IProducts[]>([]); // Para almacenar todos los productos
-    const [selectedCategory, setSelectedCategory] = useState<string>(""); // Categoría seleccionada
-    const [loading, setLoading] = useState<boolean>(true);
+    const [selectedCategory] = useState<string>(""); // Categoría seleccionada
+    const [rating, setRating] = useState<number>(0); // Estado para la calificación por estrellas
 
     const user = useContext(UserContext);
     const isUserLoggedIn = Boolean(user);
@@ -32,8 +31,6 @@ const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
                 setProduct(fetchedProduct); // Guardamos el producto en el estado
             } catch (error) {
                 console.error("Failed to fetch product:", error);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -86,32 +83,6 @@ const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
                     }}
                 ></div>
             )}
-
-            {/* Sección para seleccionar categorías */}
-            <div className="w-full max-w-7xl px-4 py-6">
-                <div className="flex justify-center space-x-4">
-                    <button
-                        onClick={() => setSelectedCategory("")}
-                        className={`px-4 py-2 rounded-md text-white ${selectedCategory === "" ? "bg-yellow-500" : "bg-black hover:bg-gray-700"}`}
-                    >
-                        All Products
-                    </button>
-                    <button
-                        onClick={() => setSelectedCategory("category1")}
-                        className={`px-4 py-2 rounded-md text-white ${selectedCategory === "category1" ? "bg-yellow-500" : "bg-black hover:bg-gray-700"}`}
-                    >
-                        Category 1
-                    </button>
-                    <button
-                        onClick={() => setSelectedCategory("category2")}
-                        className={`px-4 py-2 rounded-md text-white ${selectedCategory === "category2" ? "bg-yellow-500" : "bg-black hover:bg-gray-700"}`}
-                    >
-                        Category 2
-                    </button>
-                    {/* Agregar más categorías aquí */}
-                </div>
-            </div>
-
             <div className="flex w-full max-w-7xl px-4 py-10 space-x-8">
                 <div className="flex-1 bg-black shadow-lg rounded-lg p-6">
                     {/* Mostrar el producto principal seleccionado */}
@@ -127,6 +98,25 @@ const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
                     />
 
                     <AddToCart product={product} isUserLoggedIn={isUserLoggedIn} />
+
+                    {/* Sección de calificación */}
+                    <div className="mt-8">
+                        <h3 className="text-xl font-semibold text-white mb-4">Rate this product</h3>
+                        <div className="flex space-x-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    onClick={() => setRating(star)}
+                                    className={`text-3xl ${
+                                        star <= rating ? "text-yellow-400" : "text-gray-500"
+                                    }`}
+                                >
+                                    ★
+                                </button>
+                            ))}
+                        </div>
+                        <p className="mt-2 text-white">{`Your rating: ${rating} star${rating !== 1 ? "s" : ""}`}</p>
+                    </div>
                 </div>
 
                 <div className="lg:w-1/4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg shadow-md p-6">
@@ -142,7 +132,6 @@ const Detail = ({ params }: { params: Promise<{ id: string }> }) => {
                             Explore the plans!
                         </button>
                     </Link>
-
                 </div>
             </div>
 

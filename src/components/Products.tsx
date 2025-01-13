@@ -10,6 +10,7 @@ import { getProducts } from "@/app/api/getProducts";
 import { UserContext } from "@/context/UserContext"; 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { BreadcrumbItem } from "@/components/Breadcrumbs";
+import Image from "next/image"; // Importación de Image de Next.js
 
 export type CategoryName = "Fitness Equipment" | "Yoga Accessories" | "Supplements";
 
@@ -43,25 +44,24 @@ const Products: React.FC<{ searchQuery: string }> = ({ searchQuery }) => {
         fetchProducts();
     }, []);
 
+    // Find selected category name for breadcrumb
+    const selectedCategoryName = categories.find(category => category.name === selectedCategory)?.name;
+
     // Filter products based on category and search query
     useEffect(() => {
         const filteredByCategory = selectedCategory
-            ? products.filter(product => product.category === selectedCategory)
+            ? products.filter(product => product.category === selectedCategoryName)
             : products;
 
         const finalFiltered = filterProducts(filteredByCategory, searchQuery);
         setFilteredProducts(finalFiltered);
-    }, [searchQuery, selectedCategory, products]);
+    }, [searchQuery, selectedCategory, selectedCategoryName, products]);
 
-    // Find selected category name for breadcrumb
-    const selectedCategoryName = categories.find(category => category.name === selectedCategory)?.name;
-
-const breadcrumbItems: BreadcrumbItem[] = [
-    { name: "Home", url: "/" },
-    { name: "Products", url: "/products" },
-    ...(selectedCategoryName ? [{ name: selectedCategoryName, url: `/products/${selectedCategoryName.toLowerCase()}` }] : []),
-];
-
+    const breadcrumbItems: BreadcrumbItem[] = [
+        { name: "Home", url: "/" },
+        { name: "Products", url: "/products" },
+        ...(selectedCategoryName ? [{ name: selectedCategoryName, url: `/products/${selectedCategoryName.toLowerCase()}` }] : []),
+    ];
 
     console.log("Breadcrumb items:", breadcrumbItems);
 
@@ -90,10 +90,12 @@ const breadcrumbItems: BreadcrumbItem[] = [
                                 }`}
                                 onClick={() => setSelectedCategory(category.name as CategoryName)}
                             >
-                                <img
+                                <Image
                                     src={categoryImages[category.name as CategoryName]}
                                     alt={category.name}
                                     className="w-20 h-20 object-contain mb-2 hover:opacity-80"
+                                    width={80} // Añadido
+                                    height={80} // Añadido
                                 />
                                 <span className="text-white">{category.name}</span>
                             </div>
