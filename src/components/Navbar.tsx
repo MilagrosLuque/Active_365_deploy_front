@@ -5,20 +5,16 @@ import Link from "next/link";
 import React, { useContext } from "react";
 import NavbarAuth from "./NavbarAuth";
 import NavbarGuest from "./NavbarGuest";
-import { GymContext } from "@/context/GymContext";
-import NavbarGym from "./NavbarGym";
+
 
 const Navbar: React.FC = () => {
   const { userSession } = useContext(UserContext);
-  const { gymSession } = useContext(GymContext);
 
   // Determinar qué Navbar mostrar
   const renderNavbar = () => {
     if (userSession) {
       return <NavbarAuth />;
-    } else if (gymSession) {
-      return <NavbarGym />;
-    } else {
+    }  else {
       return <NavbarGuest />;
     }
   };

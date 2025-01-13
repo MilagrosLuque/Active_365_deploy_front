@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import fetchGyms from "../api/GymsAPI";
+import { getProducts } from "../api/getProducts";
+import { IProducts } from "@/interfaces/IProducts";
+//import { IUserSession } from "@/interfaces/ILogin";
+//import { IGym } from "@/interfaces/IGym";
 
 const DashboardAdmin: React.FC = () => {
   return (
@@ -14,7 +18,6 @@ const DashboardAdmin: React.FC = () => {
 
         {/* Overview Section */}
         <OverviewSection />
-
         {/* Sections */}
         <GymsSection />
         <ProductsSection />
@@ -80,15 +83,31 @@ const GymsSection: React.FC = () => {
   );
 };
 
+
 const ProductsSection: React.FC = () => {
+  const [products, setProducts] = useState<IProducts[]>([]);
   const [showAll, setShowAll] = useState(false);
-  const products = [
-    { id: 1, name: "Product X", status: "Active" },
-    { id: 2, name: "Product Y", status: "Inactive" },
-    { id: 3, name: "Product Z", status: "Active" },
-    { id: 4, name: "Product A", status: "Active" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoading(true);
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch {
+        setError("Failed to load products.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProducts();
+  }, []);
+
   const displayedProducts = showAll ? products : products.slice(0, 3);
+  if (loading) return <p>Loading products...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <SectionTable
@@ -101,6 +120,7 @@ const ProductsSection: React.FC = () => {
     />
   );
 };
+
 
 const UsersSection: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
@@ -126,7 +146,9 @@ const UsersSection: React.FC = () => {
 
 interface SectionTableProps {
   title: string;
-  data: any[];
+  //data: IGym[] | IProducts[] | IUserSession[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[]
   columns: string[];
   showAll: boolean;
   toggleShow: () => void;
