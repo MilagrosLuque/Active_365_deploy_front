@@ -117,7 +117,7 @@ if (orderId) {
                                 >
                                     -
                                 </button>
-                                <input
+                                <input title="f"
                                     type="number"
                                     value={quantities[item.id] || 1}
                                     onChange={(e) =>
