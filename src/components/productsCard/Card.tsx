@@ -8,7 +8,7 @@ import { useContext } from "react";
 interface CardProps {
   products: IProducts[];
   onProductSelect: (product: IProducts) => void;
-  isUserLoggedIn: boolean;
+  isUserLoggedIn?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({ products, onProductSelect }) => {
@@ -32,7 +32,7 @@ const Card: React.FC<CardProps> = ({ products, onProductSelect }) => {
             <img
               src={product.imgUrl}
               alt={product.name}
-              className="w-full h-48 object-cover rounded-t-lg"
+              className="w-45 h-40 object-cover rounded-t-lg mx-auto"
             />
             <div className="flex flex-col p-6 flex-grow">
               <h3 className="text-lg font-bold text-gray-800 truncate">{product.name}</h3>

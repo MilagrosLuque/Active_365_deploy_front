@@ -15,29 +15,7 @@ const GymCard: React.FC<{
   imageUrl: string;
   gymId: string;
 }> = ({ name, email, phone, address, city, latitude, longitude, createdAt, imageUrl, gymId }) => {
-  const [classes, setClasses] = useState<{ id: string; name: string; time: string }[]>([]);
-  const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
-  const [errorClasses, setErrorClasses] = useState<string | null>(null);
-
   const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-
-  useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes?gymId=${gymId}`);
-        if (!response.ok) throw new Error('Error fetching classes');
-        const data = await response.json();
-        setClasses(data);
-      } catch {
-        // Eliminar 'error' aquí ya que no lo necesitamos
-        setErrorClasses('Failed to load classes');
-      } finally {
-        setLoadingClasses(false);
-      }
-    };
-
-    fetchClasses();
-  }, [gymId]);
 
   return (
     <div className="max-w-sm mx-auto mb-8 bg-yellow-300 rounded-lg shadow-lg p-6">
@@ -90,25 +68,6 @@ const GymCard: React.FC<{
           <p className="text-gray-600">Location not available</p>
         )}
       </div>
-
-      <div className="mt-4 p-4 bg-yellow-200 rounded-lg border border-gray-300">
-        <h3 className="text-sm font-semibold text-gray-800">Classes:</h3>
-        {loadingClasses ? (
-          <p className="text-gray-600">Loading classes...</p>
-        ) : errorClasses ? (
-          <p className="text-red-500">{errorClasses}</p>
-        ) : classes.length > 0 ? (
-          <ul className="list-disc pl-5">
-            {classes.map((cls) => (
-              <li key={cls.id} className="text-gray-700">
-                {cls.name} - {cls.time}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">No classes available</p>
-        )}
-      </div>
     </div>
   );
 };
@@ -136,7 +95,6 @@ const About: React.FC = () => {
         const data = await response.json();
         setGyms(data);
       } catch {
-        // Eliminamos 'error' aquí también, no es necesario
         console.error('Failed to load gyms');
       } finally {
         setLoading(false);

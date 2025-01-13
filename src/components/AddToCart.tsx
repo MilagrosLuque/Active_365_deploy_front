@@ -7,7 +7,7 @@ import { UserContext } from "@/context/UserContext";
 
 interface AddToCartButtonProps {
     product: IProducts;
-    isUserLoggedIn: boolean;  
+    isUserLoggedIn?: boolean;  
 }
 
 const AddToCart: React.FC<AddToCartButtonProps> = ({ product, isUserLoggedIn }) => {
