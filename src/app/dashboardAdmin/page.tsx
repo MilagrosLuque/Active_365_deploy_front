@@ -1,8 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import fetchGyms from "../api/GymsAPI";
 import { getProducts } from "../api/getProducts";
 import { IProducts } from "@/interfaces/IProducts";
+import { getUsers } from "../api/getUsers";
+
 //import { IUserSession } from "@/interfaces/ILogin";
 //import { IGym } from "@/interfaces/IGym";
 
@@ -123,22 +125,35 @@ const ProductsSection: React.FC = () => {
 
 
 const UsersSection: React.FC = () => {
-  const [showAll, setShowAll] = useState(false);
-  const users = [
-    { id: 1, email: "admin@example.com", role: "Admin" },
-    { id: 2, email: "user1@example.com", role: "User" },
-    { id: 3, email: "user2@example.com", role: "User" },
-    { id: 4, email: "user3@example.com", role: "User" },
-  ];
-  const displayedUsers = showAll ? users : users.slice(0, 3);
+  const [users, setUsers] = useState<unknown[]>([]); // Usa el tipo adecuado
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const fetchedUsers = await getUsers(); // Llamar a getUsers sin necesidad de pasar el token
+        setUsers(fetchedUsers || []);
+      } catch  {
+        setError("Error fetching users.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []); // Dependencias vacías para ejecutar solo una vez cuando el componente se monta
+
+  if (loading) return <p>Loading users...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <SectionTable
       title="Users"
-      data={displayedUsers}
-      columns={["ID", "Email", "Role", "Actions"]}
-      showAll={showAll}
-      toggleShow={() => setShowAll(!showAll)}
+      data={users}
+      columns={["ID", "Email", "Rol", "Actions"]}
+      showAll={false}
+      toggleShow={() => {}}
       fullDataLength={users.length}
     />
   );

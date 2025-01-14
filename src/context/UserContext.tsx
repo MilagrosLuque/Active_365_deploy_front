@@ -13,6 +13,7 @@ interface UserContextType {
   handleLogout: () => Promise<void>;
   handleLogin: (loginData: ILoginData) => Promise<void>;
 
+
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -20,7 +21,9 @@ export const UserContext = createContext<UserContextType>({
   isLoggedIn: false,
   initializeUserSession: () => {},
   handleLogout: async () => {},
-  handleLogin: async () => {},
+  handleLogin: async () => {}
+
+
 });
 
 interface UserProviderProps {
@@ -59,6 +62,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   };
 
 
+
   useEffect(() => {
     initializeUserSession();
   }, []);
@@ -69,6 +73,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     initializeUserSession,
     handleLogout,
     handleLogin,
+
 
   };
 
