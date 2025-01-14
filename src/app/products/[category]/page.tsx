@@ -1,10 +1,25 @@
+'use client';
+
 import { getProductsByCategoryOrName } from '@/app/api/getProducts';
 import Card from '@/components/productsCard/Card';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 
-const Products: React.FC<{ params: { category: string } }> = async ({ params }) => {
-  const { category } = params;
-  const products = await getProductsByCategoryOrName(category);
+const Products: React.FC = () => {
+  const { category } = useParams(); // Accede a los parámetros de la ruta
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (category) {
+        // Si category es un arreglo, toma el primer elemento
+        const categoryString = Array.isArray(category) ? category[0] : category;
+        const fetchedProducts = await getProductsByCategoryOrName(categoryString);
+        setProducts(fetchedProducts);
+      }
+    };
+    fetchProducts();
+  }, [category]);
 
   return (
     <div className="container mx-auto py-8">
@@ -14,7 +29,7 @@ const Products: React.FC<{ params: { category: string } }> = async ({ params }) 
           <Card
             products={products}
             onProductSelect={() => {}}
-            isUserLoggedIn={false} 
+            isUserLoggedIn={false}
           />
         ) : (
           <div className="text-gray-500">Products not found</div>
