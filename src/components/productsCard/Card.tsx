@@ -8,7 +8,7 @@ import { useContext } from "react";
 interface CardProps {
   products: IProducts[];
   onProductSelect: (product: IProducts) => void;
-  isUserLoggedIn: boolean;
+  isUserLoggedIn?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({ products, onProductSelect }) => {
