@@ -190,7 +190,7 @@ const Products: React.FC<ProductsProps> = ({ searchQuery }) => {
                 {filteredProducts.length === 0 ? (
                     <p className="text-white">No products found</p>
                 ) : (
-                    <Card products={filteredProducts} onProductSelect={handleProductSelect} />
+                    <Card products={filteredProducts} onProductSelect={handleProductSelect} isUserLoggedIn={false} />
                 )}
             </div>
         </div>
