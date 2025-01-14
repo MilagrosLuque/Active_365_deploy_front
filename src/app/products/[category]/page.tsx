@@ -4,10 +4,11 @@ import { getProductsByCategoryOrName } from '@/app/api/getProducts';
 import Card from '@/components/productsCard/Card';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { IProducts } from '@/interfaces/IProducts';
 
 const Products: React.FC = () => {
   const { category } = useParams(); // Accede a los parámetros de la ruta
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<IProducts[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
