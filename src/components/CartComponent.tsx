@@ -9,15 +9,15 @@ const CartComponent: React.FC = () => {
     const user = useContext(UserContext);
     const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
 
-    //const isMember = user?.userSession?.user.role === "member"|| false; 
-    //const shippingCost = isMember ? 0 : 10;
+    const isMember = user?.userSession?.user.role === "member"|| false; 
+    const shippingCost = isMember ? 0 : 10;
 
     const totalProductsPrice = cart.reduce((total, item) => {
         const quantity = quantities[item.id] || 1;
         return total + item.price * quantity;
     }, 0);
 
-    const totalPrice = totalProductsPrice //+ shippingCost;
+    const totalPrice = totalProductsPrice + shippingCost;
     const APIURL = process.env.NEXT_PUBLIC_API_URL 
 
 
@@ -164,7 +164,7 @@ if (orderId) {
                 </div>
                 <div className="flex justify-between text-gray-800">
                     <p>Shipping Cost</p>
-                    {/*<p>${shippingCost}</p>*/}
+                    <p>${shippingCost}</p>
                 </div>
                 <div className="flex justify-between text-xl font-bold text-gray-900 mt-2">
                     <p>Total</p>
