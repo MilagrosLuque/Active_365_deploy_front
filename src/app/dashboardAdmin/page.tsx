@@ -1,9 +1,12 @@
 "use client";
 import {  useEffect, useState } from "react";
-import fetchGyms from "../api/GymsAPI";
-import { getProducts } from "../api/getProducts";
+import fetchGyms, { toggleGym } from "../api/GymsAPI";
+import { getProductById, getProducts, updateProduct } from "../api/getProducts";
 import { IProducts } from "@/interfaces/IProducts";
-import { getUsers } from "../api/getUsers";
+import { getUsers, toggleUser } from "../api/getUsers";
+import AddProductForm from "@/components/AddProductForm";
+import toast from "react-hot-toast";
+
 
 
 //import { IUserSession } from "@/interfaces/ILogin";
@@ -60,7 +63,6 @@ const GymsSection: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-
   useEffect(() => {
     const loadGyms = async () => {
       setLoading(true);
@@ -75,11 +77,24 @@ const GymsSection: React.FC = () => {
     loadGyms();
   }, []);
 
-
   const displayedGyms = showAll ? gyms : gyms.slice(0, 3);
+
+  // Nueva función para alternar el estado
+  const handleToggleGymStatus = async (gymId: number) => {
+    const updatedGym = await toggleGym(gymId.toString());
+    if (updatedGym) {
+      setGyms((prevGyms) =>
+        prevGyms.map((gym) =>
+          gym.id === gymId ? { ...gym, status: gym.status === "active" ? "inactive" : "active" } : gym
+        )
+      );
+    } else {
+      toast.error("Failed to toggle gym status.");
+    }
+  };
+
   if (loading) return <p>Loading gyms...</p>;
   if (error) return <p>Error: {error}</p>;
-
 
   return (
     <SectionTable
@@ -89,11 +104,19 @@ const GymsSection: React.FC = () => {
       showAll={showAll}
       toggleShow={() => setShowAll(!showAll)}
       fullDataLength={gyms.length}
+      renderActions={(gym) => (
+        <button
+          onClick={() => handleToggleGymStatus(gym.id)}
+          className={`px-4 py-2 text-white font-semibold rounded ${
+            gym.status === "active" ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
+          }`}
+        >
+          {gym.status === "active" ? "Deactivate" : "Activate"}
+        </button>
+      )}
     />
   );
 };
-
-
 
 
 const ProductsSection: React.FC = () => {
@@ -101,7 +124,9 @@ const ProductsSection: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [selectedProduct, setSelectedProduct] = useState<IProducts | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -118,21 +143,182 @@ const ProductsSection: React.FC = () => {
     loadProducts();
   }, []);
 
-
   const displayedProducts = showAll ? products : products.slice(0, 3);
   if (loading) return <p>Loading products...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  const handleProductUpdate = async (updatedProduct: IProducts) => {
+    try {
+      // Llamada a la función updateProduct para enviar los cambios al backend
+      const updatedData = await updateProduct(updatedProduct.id, updatedProduct);
+      if (updatedData) {
+        // Actualiza el estado con los datos actualizados devueltos por el backend
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product.id === updatedData.id ? updatedData : product
+          )
+        );
+        toast.success("Product updated successfully!");
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error("Failed to update product. Please try again.");
+    } finally {
+      setIsModalOpen(false);
+      setIsEditing(false);
+    }
+  };
+
+  const fetchProductDetails = async (id: number) => {
+    try {
+      const productDetails = await getProductById(id.toString());
+      setSelectedProduct(productDetails);
+      setIsModalOpen(true);
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Error fetching product details", err);
+    }
+  };
 
   return (
-    <SectionTable
-      title="Products"
-      data={displayedProducts}
-      columns={["ID", "Name", "Status", "Actions"]}
-      showAll={showAll}
-      toggleShow={() => setShowAll(!showAll)}
-      fullDataLength={products.length}
-    />
+    <>
+      <AddProductForm />
+      <SectionTable
+        title="Products"
+        data={displayedProducts}
+        columns={["ID", "Name", "Status", "Actions"]}
+        showAll={showAll}
+        toggleShow={() => setShowAll(!showAll)}
+        fullDataLength={products.length}
+        renderActions={(product) => (
+          <button
+            onClick={() => fetchProductDetails(product.id)}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            View Details
+          </button>
+        )}
+      />
+      {isModalOpen && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
+            {isEditing ? (
+              <form>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-medium">ID</label>
+                    <input
+                      type="text"
+                      value={selectedProduct.id}
+                      disabled
+                      className="w-full border rounded px-2 py-1 bg-gray-100"
+                    />
+                  </div>
+                  {Object.entries(selectedProduct).map(([key, value]) => {
+                    if (key === "id" || key === "reviews" || key === "status") return null;
+
+                    if (key === "category") {
+                      return (
+                        <div key={key}>
+                          <label htmlFor={key} className="block font-medium">
+                            Category
+                          </label>
+                          <select
+                            id={key}
+                            name={key}
+                            value={value}
+                            onChange={(e) =>
+                              setSelectedProduct((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      [key]: e.target.value as CategoryName,
+                                    }
+                                  : null
+                              )
+                            }
+                            className="w-full border rounded px-2 py-1"
+                          >
+                            <option value="" disabled>Select a category</option>
+                            <option value="Nutritional Supplements">Nutritional Supplements</option>
+                            <option value="Training Accessories">Training Accessories</option>
+                            <option value="Sports Apparel">Sports Apparel</option>
+                            <option value="Home Equipment">Home Equipment</option>
+                            <option value="Health & Wellness">Health & Wellness</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div key={key}>
+                        <label htmlFor={key} className="block font-medium">
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </label>
+                        <input
+                          type="text"
+                          id={key}
+                          name={key}
+                          value={String(value)}
+                          onChange={(e) =>
+                            setSelectedProduct((prev) =>
+                              prev ? { ...prev, [key]: e.target.value } : null
+                            )
+                          }
+                          className="w-full border rounded px-2 py-1"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    type="button"
+                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+  onClick={() => selectedProduct && handleProductUpdate(selectedProduct)}
+  type="button"
+  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+>
+  Save
+</button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <p><strong>ID:</strong> {selectedProduct.id}</p>
+                <p><strong>Name:</strong> {selectedProduct.name}</p>
+                <p><strong>Description:</strong> {selectedProduct.description}</p>
+                <p><strong>Price:</strong> ${selectedProduct.price}</p>
+                <p><strong>Stock:</strong> {selectedProduct.stock}</p>
+                <p><strong>Category:</strong> {selectedProduct.category?.name}</p>
+                <p><strong>Subcategory:</strong> {selectedProduct.subcategory || "N/A"}</p>
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -144,39 +330,72 @@ const UsersSection: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const fetchedUsers = await getUsers(); // Llamar a getUsers sin necesidad de pasar el token
         setUsers(fetchedUsers || []);
-      } catch  {
+      } catch {
         setError("Error fetching users.");
       } finally {
         setLoading(false);
       }
     };
 
-
     fetchUsers();
   }, []); // Dependencias vacías para ejecutar solo una vez cuando el componente se monta
-
 
   if (loading) return <p>Loading users...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  const handleChangeStatus = async (id: string) => {
+    try {
+      const updatedUser = await toggleUser(id); // Llamada a la API para alternar el estado
+      if (updatedUser) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === id ? { ...user, status: updatedUser.status } : user
+          )
+        );
+        toast.success(`User status updated to ${updatedUser.status}`);
+      } else {
+        throw new Error("User status update failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to toggle user status.");
+    }
+  };
 
   return (
     <SectionTable
       title="Users"
-      data={users}
-      columns={["ID", "Email", "Rol", "Actions"]}
+      data={users.map((user) => ({
+        id: user.id,
+        email: user.email,
+        rol: user.rol,
+        status: user.status,
+      }))}
+      columns={["ID", "Email", "Rol", "Status", "Actions"]}
       showAll={false}
       toggleShow={() => {}}
       fullDataLength={users.length}
+      renderActions={(user) => (
+        <button
+          onClick={() => handleChangeStatus(user.id, user.status)}
+          className={`px-4 py-2 text-white font-semibold rounded ${
+            user.status === "active"
+              ? "bg-red-500 hover:bg-red-600"
+              : "bg-green-500 hover:bg-green-600"
+          }`}
+        >
+          {user.status === "active" ? "Deactivate" : "Activate"}
+        </button>
+      )}
     />
   );
 };
+
 
 
 interface SectionTableProps {
@@ -188,6 +407,7 @@ interface SectionTableProps {
   showAll: boolean;
   toggleShow: () => void;
   fullDataLength: number;
+  renderActions?: (item: { id: number; name: string; status: string }) => React.ReactNode;
 }
 
 
@@ -198,6 +418,7 @@ const SectionTable: React.FC<SectionTableProps> = ({
   showAll,
   toggleShow,
   fullDataLength,
+  renderActions,
 }) => {
   return (
     <section className="mb-8">
@@ -213,10 +434,22 @@ const SectionTable: React.FC<SectionTableProps> = ({
           </thead>
           <tbody>
             {data.map((item, index) => (
-              <tr key={index} className="bg-white border-b text-gray-700">
-                {columns.map((col, idx) => {
-                  const key = col.toLowerCase();
-                  return <td key={idx} className="px-4 py-2">{item[key] ?? "-"}</td>;
+              <tr key={item.id || index} className="bg-white border-b text-gray-700">
+                {columns.map((col) => {
+                  if (col.toLowerCase() === "actions" && renderActions) {
+                    return (
+                      <td key={`${col}-${item.id}`} className="px-4 py-2">
+                        {renderActions(item)}
+                      </td>
+                    );
+                  }
+                  // Para las demás columnas, mapeamos dinámicamente las propiedades del objeto
+                  const value = item[col.toLowerCase()];
+                  return (
+                    <td key={`${col}-${item.id}`} className="px-4 py-2">
+                      {value !== undefined ? value : "-"}
+                    </td>
+                  );
                 })}
               </tr>
             ))}
@@ -234,6 +467,5 @@ const SectionTable: React.FC<SectionTableProps> = ({
     </section>
   );
 };
-
 
 export default DashboardAdmin;

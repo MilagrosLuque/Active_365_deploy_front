@@ -56,6 +56,39 @@ export async function getUsers() {
 }
 
 
+export async function toggleUser(userId: string) {
+  const token = getTokenFromCookies();
+
+  if (!token) {
+    toast.error("No token found in cookies");
+    return null;
+  }
+
+
+  try {
+    const res = await fetch(`${APIURL}/users/toggle-status/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Error updating user status");
+    }
+
+    const data = await res.json();
+    toast.success("User status updated successfully!");
+    return data;
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    toast.error(errorMessage || "Failed to update user status.");
+    return null;
+  }
+}
+
 export default getUsers;
 
 

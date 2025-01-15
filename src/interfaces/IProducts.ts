@@ -1,4 +1,5 @@
-type CategoryName = "Nutritional Supplements" | "Sports Apparel" | "Home Equipment" | "Health & Wellness" | "Training Accessories";
+type CategoryName = "Nutritional Supplements" | "Sports Apparel" | "Home Equipment" | "Health & Wellness" | "Training Accessories" | "other"
+| null;
 
 
 export interface IProducts {
@@ -9,6 +10,7 @@ export interface IProducts {
     price: number;
     stock: number;
     imgUrl: string;
-    category: CategoryName;
+    category?: CategoryName;
     quantity?: number;
+    status?: string;
 }
