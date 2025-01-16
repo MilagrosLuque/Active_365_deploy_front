@@ -3,25 +3,42 @@
 import { UserContext } from '@/context/UserContext';
 import React, { useState, useEffect, useContext } from 'react';
 
+// Obtener el token de las cookies
+function getTokenFromCookies() {
+  const cookies = document.cookie.split("; ");
+  const loginDataCookie = cookies.find(cookie => cookie.startsWith("loginData="));
+
+  if (!loginDataCookie) return null;
+
+  const cookieValue = loginDataCookie.split("=")[1];
+  const loginData = JSON.parse(decodeURIComponent(cookieValue));
+
+  return loginData.token || null;
+}
+
 const Classes: React.FC<{
-  
   name: string;
   gymId: string;
-  userId: string; // Pasar el userId como prop o obtenerlo desde el contexto
-}> = ({ name, gymId, userId }) => {
+}> = ({ name, gymId }) => {
   
   const [classes, setClasses] = useState<{ id: string; name: string; time: string }[]>([]);
   const [userAppointments, setUserAppointments] = useState<{ classId: string; time: string; gymId: string }[]>([]);
   const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
   const [errorClasses, setErrorClasses] = useState<string | null>(null);
-  const { userSession } = useContext(UserContext);
   
+  const { userSession } = useContext(UserContext);
+  const userId = userSession?.user?.id; // Obtener userId del contexto
+  const token = getTokenFromCookies(); // Obtener el token de las cookies
 
   // Cargar las clases y las citas del usuario al montar el componente
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes?gymId=${gymId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes?gymId=${gymId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Agregar token en los encabezados
+          },
+        });
         if (!response.ok) throw new Error('Error fetching classes');
         const data = await response.json();
         setClasses(data);
@@ -33,8 +50,13 @@ const Classes: React.FC<{
     };
 
     const fetchAppointments = async () => {
+      if (!userId) return; // Validar si userId está disponible
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments?userId=${ userSession.user.id,}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments?userId=${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Agregar token en los encabezados
+          },
+        });
         if (!response.ok) throw new Error('Error fetching appointments');
         const data = await response.json();
         setUserAppointments(data);
@@ -45,10 +67,15 @@ const Classes: React.FC<{
 
     fetchClasses();
     fetchAppointments();
-  }, [gymId, userId]);
+  }, [gymId, userId, token]);
 
   // Función para agendar una cita
   const handleScheduleAppointment = async (classId: string, classTime: string) => {
+    if (!userId) {
+      alert('User ID is required to schedule an appointment.');
+      return;
+    }
+
     // Validación: Si el usuario ya tiene una cita en la misma hora y gimnasio
     const hasAppointment = userAppointments.some(
       (appointment) => appointment.gymId === gymId && appointment.time === classTime
@@ -70,6 +97,7 @@ const Classes: React.FC<{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Agregar token en los encabezados
         },
         body: JSON.stringify(appointmentData),
       });
@@ -137,14 +165,18 @@ const About: React.FC = () => {
     id: string;
     name: string;
   }[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
-  const userId = "cc91aa33-ac7b-4929-b26c-cc619bf4b7ae"; // Este ID debe obtenerse desde el contexto de usuario o sesión
+  const [loading, setLoading] = useState<boolean>(true);
+  const token = getTokenFromCookies(); // Obtener el token de las cookies
 
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Gyms`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Gyms`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Agregar token en los encabezados
+          },
+        });
         if (!response.ok) throw new Error('Error fetching gyms');
         const data = await response.json();
         setGyms(data);
@@ -156,7 +188,7 @@ const About: React.FC = () => {
     };
 
     fetchGyms();
-  }, []);
+  }, [token]);
 
   if (loading) return <div className="text-center py-4">Loading...</div>;
 
@@ -168,7 +200,7 @@ const About: React.FC = () => {
       <h1 className="text-2xl font-bold text-center mb-6">Our Gym Classes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {gyms.map((gym) => (
-          <Classes key={gym.id} gymId={gym.id} name={gym.name} userId={userId} />
+          <Classes key={gym.id} gymId={gym.id} name={gym.name} />
         ))}
       </div>
     </div>
