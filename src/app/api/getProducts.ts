@@ -1,4 +1,5 @@
 import { IProducts } from "@/interfaces/IProducts";
+import toast from "react-hot-toast";
 
 const APIURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -103,3 +104,121 @@ export const getProductsByCategoryOrName = async (categoryOrName: string): Promi
       throw new Error("Failed to fetch products by category or name");
     }
   };
+
+//obtener el token 
+function getTokenFromCookies() {
+    const cookies = document.cookie.split("; ");
+    const loginDataCookie = cookies.find(cookie => cookie.startsWith("loginData="));
+  
+  
+    if (!loginDataCookie) return null;
+  
+  
+    const cookieValue = loginDataCookie.split("=")[1];
+    const loginData = JSON.parse(decodeURIComponent(cookieValue));
+  
+  
+    return loginData.token || null;
+  }
+
+
+//crear u nuevo producto
+export async function addProduct(product:IProducts) {
+    const token = getTokenFromCookies();
+  
+    if (!token) {
+      toast.error("No token found in cookies");
+      return null;
+    }
+  
+    try {
+      const res = await fetch(`${APIURL}/products`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(product),
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error adding product");
+      }
+  
+      const data = await res.json();
+      toast.success("Product added successfully!");
+      return data;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error(errorMessage || "Failed to add product. Please try again.");
+      return null;
+    }
+  }
+  
+// Actualizar un producto existente
+export async function updateProduct(id: string, product: IProducts) {
+    const token = getTokenFromCookies();
+
+    if (!token) {
+        toast.error("No token found in cookies");
+        return null;
+    }
+
+    try {
+        const res = await fetch(`${APIURL}/products/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(product),
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Error updating product");
+        }
+
+        const data = await res.json();
+        toast.success("Product updated successfully!");
+        return data;
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        toast.error(errorMessage || "Failed to update product. Please try again.");
+        return null;
+    }
+}
+
+//cambiar el estado de un producto
+export async function toggleProduct(productId: string) {
+    const token = getTokenFromCookies();
+  
+    if (!token) {
+      toast.error("No token found in cookies");
+      return null;
+    }
+  
+    try {
+      const res = await fetch(`${APIURL}/products/toggle-status/${productId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error updating gym status");
+      }
+  
+      const data = await res.json();
+      toast.success("Product status updated successfully!");
+      return data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error(errorMessage || "Failed to update gym status.");
+      return null;
+    }
+  }

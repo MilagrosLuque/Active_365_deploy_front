@@ -1,21 +1,38 @@
-import { useState } from "react";
+"use client";
+
+import { useContext, useState, useEffect } from "react";
+import { UserContext } from "@/context/UserContext";
 
 const ProfileSection: React.FC = () => {
-  const [profilePic, setProfilePic] = useState<string>(
-    "https://via.placeholder.com/150"
-  );
+  const { userSession } = useContext(UserContext);
+  const [profilePic, setProfilePic] = useState<string>("https://via.placeholder.com/150");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  //despues aca se usaran los datos reales del user de userContext
   const [userData, setUserData] = useState({
-    name: "John Doe",
-    phone: "123-456-7890",
-    address: "123 Main St",
-    email: "john.doe@example.com",
-    city: "New York",
-    height: "180",
-    weight: "75",
+    //id: "",
+    name: "",
+    phone: "",
+    address: "",
+    email: "",
+    city: "",
+    height: "",
+    weight: "",
   });
+
+  // Actualizar userData con la información del userSession
+  useEffect(() => {
+    if (userSession && userSession.user) {
+      setUserData({
+        //id: userSession.user.id || "",
+        name: userSession.user.name || "",
+        phone: userSession.user.phone || "",
+        address: userSession.user.address || "",
+        email: userSession.user.email || "",
+        city: userSession.user.city || "",
+        height: userSession.user.height || "",
+        weight: userSession.user.weight || "",
+      });
+    }
+  }, [userSession]);
 
   const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -30,7 +47,7 @@ const ProfileSection: React.FC = () => {
   };
 
   const handleSaveChanges = () => {
-    //enviar los datos modificados al back
+    // Lógica para enviar los datos actualizados al backend
     setIsModalOpen(false);
   };
 
@@ -45,31 +62,16 @@ const ProfileSection: React.FC = () => {
             className="w-24 h-24 rounded-full object-cover border-2 border-yellow-500"
           />
           <div>
-            <p className="text-lg text-gray-700">
-              <strong>Name:</strong> {userData.name}
-            </p>
-            <p className="text-lg text-gray-700">
-              <strong>Phone:</strong> {userData.phone}
-            </p>
-            <p className="text-lg text-gray-700">
-              <strong>Address:</strong> {userData.address}
-            </p>
-            <p className="text-lg text-gray-700">
-              <strong>Email:</strong> {userData.email}
-            </p>
-            <p className="text-lg text-gray-700">
-              <strong>City:</strong> {userData.city}
-            </p>
-            <p className="text-lg text-gray-700">
-              <strong>Height:</strong> {userData.height}
-            </p>
-            <p className="text-lg text-gray-700">
-              <strong>Weight:</strong> {userData.weight}
-            </p>
-            <label
-              htmlFor="profile-pic"
-              className="inline-block mt-4 btn"
-            >
+            {/*<p className="text-lg text-gray-700"><strong>Id:</strong> {userData.id} </p>*/}
+            <p className="text-lg text-gray-700"><strong>Name:</strong> {userData.name} </p>
+            <p className="text-lg text-gray-700"><strong>Phone:</strong> {userData.phone}</p>
+            <p className="text-lg text-gray-700"><strong>Address:</strong> {userData.address}</p>
+            <p className="text-lg text-gray-700"><strong>Email:</strong> {userData.email}</p>
+            <p className="text-lg text-gray-700"><strong>City:</strong> {userData.city}</p>
+            <p className="text-lg text-gray-700"><strong>Height:</strong> {userData.height} cm</p>
+            <p className="text-lg text-gray-700"><strong>Weight:</strong> {userData.weight} kg</p>
+
+            <label htmlFor="profile-pic" className="inline-block mt-4 btn">
               Change Photo
             </label>
             <input
@@ -79,10 +81,7 @@ const ProfileSection: React.FC = () => {
               accept="image/*"
               onChange={handleProfilePicChange}
             />
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="ml-4 btn"
-            >
+            <button onClick={() => setIsModalOpen(true)} className="ml-4 btn">
               Edit Profile
             </button>
           </div>
