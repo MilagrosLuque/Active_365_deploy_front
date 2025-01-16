@@ -9,9 +9,9 @@ import React, { useState } from "react";
 const DashboardPage: React.FC = () => {
 
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
-  const [isMembershipOpen, setIsMembershipOpen] = useState(false);
+  //const [isMembershipOpen, setIsMembershipOpen] = useState(false);
   const [isMyClassesOpen, setIsMyClassesOpen] = useState(false);
-  const [isGymTrackerOpen, setIsGymTrackerOpen] = useState(false);
+  //const [isGymTrackerOpen, setIsGymTrackerOpen] = useState(false);
 
 
   return (
@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
 
       <ProfileSection/>
 
-      {/* Membership Status Section */}
+      {/* Membership Status Section 
       <div className="bg-white rounded-lg shadow-md mb-6">
         <button
           onClick={() => setIsMembershipOpen(!isMembershipOpen)}
@@ -36,7 +36,7 @@ const DashboardPage: React.FC = () => {
             </p>
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Order History Section */}
       <div className="bg-white rounded-lg shadow-md mb-6">
@@ -63,7 +63,7 @@ const DashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Gym Tracker Section */}
+      {/* Gym Tracker Section 
       <div className="bg-white rounded-lg shadow-md">
         <button
           onClick={() => setIsGymTrackerOpen(!isGymTrackerOpen)}
@@ -76,7 +76,7 @@ const DashboardPage: React.FC = () => {
 
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
