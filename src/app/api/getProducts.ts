@@ -120,6 +120,8 @@ function getTokenFromCookies() {
   
     return loginData.token || null;
   }
+
+
 //crear u nuevo producto
 export async function addProduct(product:IProducts) {
     const token = getTokenFromCookies();
@@ -187,3 +189,36 @@ export async function updateProduct(id: string, product: IProducts) {
         return null;
     }
 }
+
+//cambiar el estado de un producto
+export async function toggleProduct(productId: string) {
+    const token = getTokenFromCookies();
+  
+    if (!token) {
+      toast.error("No token found in cookies");
+      return null;
+    }
+  
+    try {
+      const res = await fetch(`${APIURL}/products/toggle-status/${productId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error updating gym status");
+      }
+  
+      const data = await res.json();
+      toast.success("Product status updated successfully!");
+      return data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error(errorMessage || "Failed to update gym status.");
+      return null;
+    }
+  }

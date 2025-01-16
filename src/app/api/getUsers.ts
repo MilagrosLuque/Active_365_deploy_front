@@ -89,6 +89,38 @@ export async function toggleUser(userId: string) {
   }
 }
 
+export async function setAdmin(userId: string) {
+    const token = getTokenFromCookies();
+  
+    if (!token) {
+      toast.error("No token found in cookies");
+      return null;
+    }
+  
+    try {
+      const res = await fetch(`${APIURL}/users/setadmin/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to assign admin role.");
+      }
+  
+      const data = await res.json();
+      toast.success("User successfully!");
+      return data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error(errorMessage || "User has been successfully promoted to admin.");
+      return null;
+    }
+}
+
 export default getUsers;
 
 
