@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 const APIURL = process.env.NEXT_PUBLIC_API_URL;
 
 
-function getTokenFromCookies() {
+export function getTokenFromCookies() {
   const cookies = document.cookie.split("; ");
   const loginDataCookie = cookies.find(cookie => cookie.startsWith("loginData="));
 
