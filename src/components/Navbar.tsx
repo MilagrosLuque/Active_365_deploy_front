@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { useContext } from "react";
 import NavbarAuth from "./NavbarAuth";
 import NavbarGuest from "./NavbarGuest";
+import NavbarAdmin from "./NavbarAdmin";
 
 
 const Navbar: React.FC = () => {
@@ -12,9 +13,11 @@ const Navbar: React.FC = () => {
 
   // Determinar qué Navbar mostrar
   const renderNavbar = () => {
-    if (userSession) {
+    if (userSession?.user?.rol === "admin") {
+      return <NavbarAdmin />;
+    } else if (userSession) {
       return <NavbarAuth />;
-    }  else {
+    } else {
       return <NavbarGuest />;
     }
   };
