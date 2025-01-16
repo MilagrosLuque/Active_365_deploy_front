@@ -4,21 +4,25 @@ import { getProductsByCategoryOrName } from '@/app/api/getProducts';
 import Card from '@/components/productsCard/Card';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { IProducts } from '@/interfaces/IProducts'; // Importa la interfaz IProducts
 
 const Products: React.FC = () => {
-  const { category } = useParams(); // Accede a los parámetros de la ruta
-  const [products, setProducts] = useState<any[]>([]);
+  const { category } = useParams<{ category?: string }>() || {}; // Agregamos un fallback vacío {} para el caso de null
+  const [products, setProducts] = useState<IProducts[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       if (category) {
-        // Si category es un arreglo, toma el primer elemento
+        // Verificar que category no sea null o undefined
         const categoryString = Array.isArray(category) ? category[0] : category;
         const fetchedProducts = await getProductsByCategoryOrName(categoryString);
         setProducts(fetchedProducts);
       }
     };
-    fetchProducts();
+
+    if (category) {
+      fetchProducts();
+    }
   }, [category]);
 
   return (

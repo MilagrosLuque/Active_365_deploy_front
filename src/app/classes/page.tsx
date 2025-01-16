@@ -1,20 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { UserContext } from '@/context/UserContext';
+import React, { useState, useEffect, useContext } from 'react';
 
 const Classes: React.FC<{
+  
   name: string;
   gymId: string;
   userId: string; // Pasar el userId como prop o obtenerlo desde el contexto
 }> = ({ name, gymId, userId }) => {
+  
   const [classes, setClasses] = useState<{ id: string; name: string; time: string }[]>([]);
   const [userAppointments, setUserAppointments] = useState<{ classId: string; time: string; gymId: string }[]>([]);
   const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
-  const [loadingAppointments, setLoadingAppointments] = useState<boolean>(true);
   const [errorClasses, setErrorClasses] = useState<string | null>(null);
-  const [errorAppointments, setErrorAppointments] = useState<string | null>(null);
+  const { userSession } = useContext(UserContext);
+  
 
-  // Cargar las clases al montar el componente
+  // Cargar las clases y las citas del usuario al montar el componente
   useEffect(() => {
     const fetchClasses = async () => {
       try {
@@ -31,14 +34,12 @@ const Classes: React.FC<{
 
     const fetchAppointments = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments?userId=${userId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments?userId=${ userSession.user.id,}`);
         if (!response.ok) throw new Error('Error fetching appointments');
         const data = await response.json();
         setUserAppointments(data);
       } catch {
-        setErrorAppointments('Failed to load appointments');
-      } finally {
-        setLoadingAppointments(false);
+        console.error('Failed to load appointments');
       }
     };
 
@@ -46,6 +47,7 @@ const Classes: React.FC<{
     fetchAppointments();
   }, [gymId, userId]);
 
+  // Función para agendar una cita
   const handleScheduleAppointment = async (classId: string, classTime: string) => {
     // Validación: Si el usuario ya tiene una cita en la misma hora y gimnasio
     const hasAppointment = userAppointments.some(
@@ -60,10 +62,11 @@ const Classes: React.FC<{
     const appointmentData = {
       userId: userId,
       classId: classId,
+      time: classTime,
     };
 
     try {
-      const response = await fetch('http://localhost:3000/appointments', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,13 +75,24 @@ const Classes: React.FC<{
       });
 
       if (!response.ok) {
-        throw new Error('Failed to schedule appointment');
+        let errorDetails: { message: string } = { message: 'Failed to schedule appointment' };
+        try {
+          errorDetails = await response.json();
+        } catch {
+          // Si no podemos obtener detalles, mantenemos el mensaje por defecto
+        }
+        console.error('Error details:', errorDetails);
+        throw new Error(errorDetails.message);
       }
 
-      const data = await response.json();
       alert('Appointment scheduled successfully!');
-    } catch (error) {
-      alert('Failed to schedule appointment: ' + error.message);
+      setUserAppointments((prev) => [...prev, { gymId, classId, time: classTime }]);
+    } catch (error: unknown) { // Utilizar unknown
+      if (error instanceof Error) {
+        alert('Failed to schedule appointment: ' + error.message);
+      } else {
+        alert('Failed to schedule appointment: Unknown error');
+      }
     }
   };
 
