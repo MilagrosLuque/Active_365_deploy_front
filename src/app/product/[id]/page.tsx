@@ -10,10 +10,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 const Detail = () => {
-  const { id } = useParams(); // Obtenemos el id del parámetro
+  const { id } = useParams<{ id: string }>(); // Definimos el tipo explícito para 'id'
 
   const [product, setProduct] = useState<IProducts | null>(null);
-  const [rating, setRating] = useState<number>(0);
 
   const user = useContext(UserContext);
   const isUserLoggedIn = Boolean(user);
@@ -23,8 +22,7 @@ const Detail = () => {
     const fetchProduct = async () => {
       if (id) {
         try {
-          // Aseguramos que id es un string antes de pasarlo a la función
-          const fetchedProduct = await getProductById(id as string); // Uso de aserción de tipo
+          const fetchedProduct = await getProductById(id); // Ya 'id' es de tipo 'string'
           setProduct(fetchedProduct);
         } catch (error) {
           console.error("Failed to fetch product:", error);
@@ -79,25 +77,33 @@ const Detail = () => {
 
           <AddToCart product={product} isUserLoggedIn={isUserLoggedIn} />
 
-          {/* Calificación por estrellas */}
+          {/* Sección de reseñas */}
           <div className="mt-8">
-            <h3 className="text-xl font-semibold text-white mb-4">Rate this product</h3>
-            <div className="flex space-x-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  onClick={() => setRating(star)}
-                  className={`text-3xl ${
-                    star <= rating ? "text-yellow-400" : "text-gray-500"
-                  }`}
-                >
-                  ★
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-white">{`Your rating: ${rating} star${
-              rating !== 1 ? "s" : ""
-            }`}</p>
+            <h3 className="text-xl font-semibold text-white mb-4">Reviews</h3>
+            {product.reviews && product.reviews.length > 0 ? (
+              <ul className="space-y-4">
+                {product.reviews.map((review, index) => (
+                  <li key={index} className="bg-gray-800 p-4 rounded-lg">
+                    <p className="text-sm text-gray-400">
+                      <strong>{review.user}</strong> says:
+                    </p>
+                    <p className="text-white">{review.comment}</p>
+                    <div className="flex items-center space-x-1 mt-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={`text-xl ${star <= review.rating ? "text-yellow-400" : "text-gray-500"}`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No reviews yet.</p>
+            )}
           </div>
         </div>
 

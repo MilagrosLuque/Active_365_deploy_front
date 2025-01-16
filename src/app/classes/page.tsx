@@ -5,18 +5,20 @@ import React, { useState, useEffect } from 'react';
 const Classes: React.FC<{
   name: string;
   gymId: string;
-}> = ({ name, gymId }) => {
+  userId: string; // Pasar el userId como prop o obtenerlo desde el contexto
+}> = ({ name, gymId, userId }) => {
   const [classes, setClasses] = useState<{ id: string; name: string; time: string }[]>([]);
+  const [userAppointments, setUserAppointments] = useState<{ classId: string; time: string; gymId: string }[]>([]);
   const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
+  const [loadingAppointments, setLoadingAppointments] = useState<boolean>(true);
   const [errorClasses, setErrorClasses] = useState<string | null>(null);
+  const [errorAppointments, setErrorAppointments] = useState<string | null>(null);
 
   // Cargar las clases al montar el componente
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/classes?gymId=${gymId}`
-        );
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes?gymId=${gymId}`);
         if (!response.ok) throw new Error('Error fetching classes');
         const data = await response.json();
         setClasses(data);
@@ -27,12 +29,57 @@ const Classes: React.FC<{
       }
     };
 
-    fetchClasses();
-  }, [gymId]);
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments?userId=${userId}`);
+        if (!response.ok) throw new Error('Error fetching appointments');
+        const data = await response.json();
+        setUserAppointments(data);
+      } catch {
+        setErrorAppointments('Failed to load appointments');
+      } finally {
+        setLoadingAppointments(false);
+      }
+    };
 
-  const handleScheduleAppointment = () => {
-    // Lógica para agendar una cita (esto puede ser un redireccionamiento o abrir un formulario)
-    alert('Appointment scheduling feature is under construction!');
+    fetchClasses();
+    fetchAppointments();
+  }, [gymId, userId]);
+
+  const handleScheduleAppointment = async (classId: string, classTime: string) => {
+    // Validación: Si el usuario ya tiene una cita en la misma hora y gimnasio
+    const hasAppointment = userAppointments.some(
+      (appointment) => appointment.gymId === gymId && appointment.time === classTime
+    );
+
+    if (hasAppointment) {
+      alert('You already have an appointment at this time and gym.');
+      return;
+    }
+
+    const appointmentData = {
+      userId: userId,
+      classId: classId,
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to schedule appointment');
+      }
+
+      const data = await response.json();
+      alert('Appointment scheduled successfully!');
+    } catch (error) {
+      alert('Failed to schedule appointment: ' + error.message);
+    }
   };
 
   return (
@@ -54,22 +101,18 @@ const Classes: React.FC<{
             {classes.map((cls) => (
               <li key={cls.id} className="text-gray-700">
                 {cls.name} - {cls.time}
+                <button
+                  onClick={() => handleScheduleAppointment(cls.id, cls.time)}
+                  className="ml-4 py-1 px-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+                >
+                  Schedule an Appointment
+                </button>
               </li>
             ))}
           </ul>
         ) : (
           <p className="text-gray-600">No classes available</p>
         )}
-      </div>
-
-      {/* Botón para agendar cita */}
-      <div className="mt-4">
-        <button
-          onClick={handleScheduleAppointment}
-          className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
-        >
-          Schedule an Appointment
-        </button>
       </div>
     </div>
   );
@@ -81,6 +124,8 @@ const About: React.FC = () => {
     name: string;
   }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const userId = "cc91aa33-ac7b-4929-b26c-cc619bf4b7ae"; // Este ID debe obtenerse desde el contexto de usuario o sesión
 
   useEffect(() => {
     const fetchGyms = async () => {
@@ -109,7 +154,7 @@ const About: React.FC = () => {
       <h1 className="text-2xl font-bold text-center mb-6">Our Gym Classes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {gyms.map((gym) => (
-          <Classes key={gym.id} gymId={gym.id} name={gym.name} />
+          <Classes key={gym.id} gymId={gym.id} name={gym.name} userId={userId} />
         ))}
       </div>
     </div>
