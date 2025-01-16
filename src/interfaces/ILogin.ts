@@ -1,4 +1,4 @@
-export interface ILoginData  {
+export interface ILoginData {
     email: string;
     password: string;
 }
@@ -7,6 +7,7 @@ export interface ILoginErrors {
     email?: string;
     password?: string;
 }
+
 
 /*export interface IUserSession{
     token:string;
@@ -49,3 +50,4 @@ export interface IUserSession {
     };
   }
   
+
