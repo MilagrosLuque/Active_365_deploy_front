@@ -1,13 +1,11 @@
 "use client";
 import {  useEffect, useState } from "react";
 import fetchGyms, { toggleGym } from "../api/GymsAPI";
-import { getProductById, getProducts, updateProduct } from "../api/getProducts";
+import { getProductById, getProducts, toggleProduct, updateProduct } from "../api/getProducts";
 import { IProducts } from "@/interfaces/IProducts";
-import { getUsers, toggleUser } from "../api/getUsers";
+import { getUsers, setAdmin, toggleUser } from "../api/getUsers";
 import AddProductForm from "@/components/AddProductForm";
 import toast from "react-hot-toast";
-
-
 
 //import { IUserSession } from "@/interfaces/ILogin";
 //import { IGym } from "@/interfaces/IGym";
@@ -24,8 +22,7 @@ const DashboardAdmin: React.FC = () => {
         </header>
 
 
-        {/* Overview Section */}
-        <OverviewSection />
+        {/* Overview Section <OverviewSection />*/}
         {/* Sections */}
         <GymsSection />
         <ProductsSection />
@@ -36,7 +33,7 @@ const DashboardAdmin: React.FC = () => {
 };
 
 
-const OverviewSection: React.FC = () => {
+/*const OverviewSection: React.FC = () => {
   return (
     <section className="mb-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -54,7 +51,7 @@ const OverviewSection: React.FC = () => {
       </div>
     </section>
   );
-};
+};*/
 
 
 const GymsSection: React.FC = () => {
@@ -143,16 +140,32 @@ const ProductsSection: React.FC = () => {
     loadProducts();
   }, []);
 
+  const handleToggleProductStatus = async (productId: number) => {
+    try {
+      const updatedProduct = await toggleProduct(productId.toString());
+      if (updatedProduct) {
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product.id === productId
+              ? { ...product, status: product.status === "active" ? "inactive" : "active" }
+              : product
+          )
+        );
+        toast.success("Product status updated successfully!");
+      }
+    } catch {
+      toast.error("Failed to toggle product status.");
+    }
+  };
+
   const displayedProducts = showAll ? products : products.slice(0, 3);
   if (loading) return <p>Loading products...</p>;
   if (error) return <p>Error: {error}</p>;
 
   const handleProductUpdate = async (updatedProduct: IProducts) => {
     try {
-      // Llamada a la función updateProduct para enviar los cambios al backend
       const updatedData = await updateProduct(updatedProduct.id, updatedProduct);
       if (updatedData) {
-        // Actualiza el estado con los datos actualizados devueltos por el backend
         setProducts((prevProducts) =>
           prevProducts.map((product) =>
             product.id === updatedData.id ? updatedData : product
@@ -191,15 +204,27 @@ const ProductsSection: React.FC = () => {
         toggleShow={() => setShowAll(!showAll)}
         fullDataLength={products.length}
         renderActions={(product) => (
-          <button
-            onClick={() => fetchProductDetails(product.id)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            View Details
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => fetchProductDetails(product.id)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              View Details
+            </button>
+            <button
+              onClick={() => handleToggleProductStatus(product.id)}
+              className={`px-4 py-2 text-white font-semibold rounded ${
+                product.status === "active"
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {product.status === "active" ? "Deactivate" : "Activate"}
+            </button>
+          </div>
         )}
       />
-      {isModalOpen && selectedProduct && (
+        {isModalOpen && selectedProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-2xl font-bold mb-4">Product Details</h2>
@@ -322,18 +347,15 @@ const ProductsSection: React.FC = () => {
   );
 };
 
-
-
-
 const UsersSection: React.FC = () => {
-  const [users, setUsers] = useState<unknown[]>([]); // Usa el tipo adecuado
+  const [users, setUsers] = useState<unknown[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const fetchedUsers = await getUsers(); // Llamar a getUsers sin necesidad de pasar el token
+        const fetchedUsers = await getUsers();
         setUsers(fetchedUsers || []);
       } catch {
         setError("Error fetching users.");
@@ -343,14 +365,14 @@ const UsersSection: React.FC = () => {
     };
 
     fetchUsers();
-  }, []); // Dependencias vacías para ejecutar solo una vez cuando el componente se monta
+  }, []);
 
   if (loading) return <p>Loading users...</p>;
   if (error) return <p>Error: {error}</p>;
 
   const handleChangeStatus = async (id: string) => {
     try {
-      const updatedUser = await toggleUser(id); // Llamada a la API para alternar el estado
+      const updatedUser = await toggleUser(id);
       if (updatedUser) {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
@@ -364,6 +386,25 @@ const UsersSection: React.FC = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to toggle user status.");
+    }
+  };
+
+  const handleSetAdmin = async (id: string) => {
+    try {
+      const updatedUser = await setAdmin(id);
+      if (updatedUser) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === id ? { ...user, rol: "admin" } : user
+          )
+        );
+        toast.success("User promoted to admin successfully!");
+      } else {
+        throw new Error("Failed to promote user to admin");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to promote user to admin.");
     }
   };
 
@@ -381,16 +422,24 @@ const UsersSection: React.FC = () => {
       toggleShow={() => {}}
       fullDataLength={users.length}
       renderActions={(user) => (
-        <button
-          onClick={() => handleChangeStatus(user.id, user.status)}
-          className={`px-4 py-2 text-white font-semibold rounded ${
-            user.status === "active"
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-green-500 hover:bg-green-600"
-          }`}
-        >
-          {user.status === "active" ? "Deactivate" : "Activate"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleChangeStatus(user.id, user.status)}
+            className={`px-4 py-2 text-white font-semibold rounded ${
+              user.status === "active"
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-green-500 hover:bg-green-600"
+            }`}
+          >
+            {user.status === "active" ? "Deactivate" : "Activate"}
+          </button>
+          <button
+            onClick={() => handleSetAdmin(user.id)}
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+          >
+            Make Admin
+          </button>
+        </div>
       )}
     />
   );

@@ -8,6 +8,7 @@ const ProfileSection: React.FC = () => {
   const [profilePic, setProfilePic] = useState<string>("https://via.placeholder.com/150");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState({
+    //id: "",
     name: "",
     phone: "",
     address: "",
@@ -21,6 +22,7 @@ const ProfileSection: React.FC = () => {
   useEffect(() => {
     if (userSession && userSession.user) {
       setUserData({
+        //id: userSession.user.id || "",
         name: userSession.user.name || "",
         phone: userSession.user.phone || "",
         address: userSession.user.address || "",
@@ -60,6 +62,7 @@ const ProfileSection: React.FC = () => {
             className="w-24 h-24 rounded-full object-cover border-2 border-yellow-500"
           />
           <div>
+            {/*<p className="text-lg text-gray-700"><strong>Id:</strong> {userData.id} </p>*/}
             <p className="text-lg text-gray-700"><strong>Name:</strong> {userData.name} </p>
             <p className="text-lg text-gray-700"><strong>Phone:</strong> {userData.phone}</p>
             <p className="text-lg text-gray-700"><strong>Address:</strong> {userData.address}</p>
