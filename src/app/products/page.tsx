@@ -23,12 +23,11 @@ const categoryImages: Record<string, string> = {
     "Training Accessories": "/Training Accessories.png",
 };
 
-interface ProductsProps {
-  searchQuery: string;  
-}
+import { useSearchParams } from 'next/navigation';
 
-const Products: React.FC<ProductsProps> = ({ searchQuery }) => { 
-
+const Products: React.FC = () => { 
+    const searchParams = useSearchParams();
+    const searchQuery = searchParams.get('searchQuery') || '';
    
     const [categories, setCategories] = useState<Category[]>([]); 
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
