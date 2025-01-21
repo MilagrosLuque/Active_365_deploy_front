@@ -2,11 +2,11 @@
 import {  useEffect, useState } from "react";
 import fetchGyms, { toggleGym } from "../api/GymsAPI";
 import { getProductById, getProducts, toggleProduct, updateProduct } from "../api/getProducts";
-import { IProducts } from "@/interfaces/IProducts";
+import { CategoryName, IProducts } from "@/interfaces/IProducts";
 import { getUsers, setAdmin, toggleUser } from "../api/getUsers";
 import AddProductForm from "@/components/AddProductForm";
 import toast from "react-hot-toast";
-import { CategoryName } from "@/components/Products";
+
 
 //import { IUserSession } from "@/interfaces/ILogin";
 //import { IGym } from "@/interfaces/IGym";
@@ -259,7 +259,7 @@ const ProductsSection: React.FC = () => {
                             name={key}
                             value={value}
                             onChange={(e) =>
-                              setSelectedProduct((prev) =>
+                              setSelectedProduct((prev) =>//linea 262 donde empieza el error
                                 prev
                                   ? {
                                       ...prev,
@@ -327,7 +327,7 @@ const ProductsSection: React.FC = () => {
                 <p><strong>Description:</strong> {selectedProduct.description}</p>
                 <p><strong>Price:</strong> ${selectedProduct.price}</p>
                 <p><strong>Stock:</strong> {selectedProduct.stock}</p>
-                <p><strong>Category:</strong> {selectedProduct.category?.name}</p>
+                <p><strong>Category:</strong> {selectedProduct.category}</p>
                 <p><strong>Subcategory:</strong> {selectedProduct.subcategory || "N/A"}</p>
                 <div className="mt-4 flex justify-end gap-2">
                   <button

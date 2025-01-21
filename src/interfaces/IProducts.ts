@@ -1,5 +1,11 @@
-type CategoryName = "Nutritional Supplements" | "Sports Apparel" | "Home Equipment" | "Health & Wellness" | "Training Accessories" | "other"
-| null;
+export type CategoryName = 
+  | "Nutritional Supplements"
+  | "Sports Apparel"
+  | "Home Equipment"
+  | "Health & Wellness"
+  | "Training Accessories"
+  | "other"
+  | null;
 
 
 export interface IProducts {
