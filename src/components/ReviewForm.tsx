@@ -38,12 +38,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ productId, userId }) => {
       if (!response.ok) {
         throw new Error("Failed to submit review");
       }
-
-      const result = await response.json();
+      //lo comente porque no se estaba usando 
+      //const result = await response.json();
       setSuccessMessage("Review submitted successfully!");
       setRating(0);
       setComment("");
-    } catch (error) {
+    } catch {
       setError("Error submitting review. Please try again.");
     }
   };

@@ -6,6 +6,7 @@ import { IProducts } from "@/interfaces/IProducts";
 import { getUsers, setAdmin, toggleUser } from "../api/getUsers";
 import AddProductForm from "@/components/AddProductForm";
 import toast from "react-hot-toast";
+import { CategoryName } from "@/components/Products";
 
 //import { IUserSession } from "@/interfaces/ILogin";
 //import { IGym } from "@/interfaces/IGym";

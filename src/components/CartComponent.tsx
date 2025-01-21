@@ -8,7 +8,8 @@ import { getTokenFromCookies } from "@/app/api/getUsers";
 const CartComponent: React.FC = () => {
     const { userSession } = useContext(UserContext)
     const { cart, removeFromCart, clearCart } = useContext(GeneralContext);
-    const user = useContext(UserContext);
+    //lo comente porque no se estaba usando user
+    //const user = useContext(UserContext);
     const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
     const isMember = true;
     const shippingCost = isMember ? 0 : 10;
