@@ -165,7 +165,11 @@ const ProductsSection: React.FC = () => {
 
   const handleProductUpdate = async (updatedProduct: IProducts) => {
     try {
-      const updatedData = await updateProduct(updatedProduct.id, updatedProduct);
+      if (!updatedProduct.id) {
+        throw new Error("Product ID is required to update the product.");
+      }
+  
+      const updatedData = await updateProduct(updatedProduct.id.toString(), updatedProduct); // Convertir a string
       if (updatedData) {
         setProducts((prevProducts) =>
           prevProducts.map((product) =>
