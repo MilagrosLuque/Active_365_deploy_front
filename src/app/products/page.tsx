@@ -23,11 +23,18 @@ const categoryImages: Record<string, string> = {
     "Training Accessories": "/Training Accessories.png",
 };
 
+/*interface ProductsProps {
+    searchQuery: string;
+  }
+  
+  const Products: React.FC<ProductsProps> = ({ searchQuery }) => {*/
+
 import { useSearchParams } from 'next/navigation';
 
 const Products: React.FC = () => { 
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('searchQuery') || '';
+    //hasta aca es codigo nuevo
    
     const [categories, setCategories] = useState<Category[]>([]); 
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -98,11 +105,26 @@ const Products: React.FC = () => {
             ? filteredBySearch.filter(product => product.subcategory === selectedSubcategory)
             : filteredBySearch;
 
-        const sortedByPrice = filteredBySubcategory.sort((a, b) => {
+        /*const sortedByPrice = filteredBySubcategory.sort((a, b) => {
+            const priceA = a.price ?? 0;
+            const priceB = b.price ?? 0;
+
             if (priceOrder === 'asc') {
-                return a.price - b.price;
+                return a.price - b.price;//linea con error
             } else {
-                return b.price - a.price;
+                return b.price - a.price;//linea con error
+            }
+        });*/
+
+        //codigo corregido para deploy, agregue un valor predeterminado en caso de que price sea undefined
+        const sortedByPrice = filteredBySubcategory.sort((a, b) => {
+            const priceA = a.price ?? 0;
+            const priceB = b.price ?? 0;
+        
+            if (priceOrder === 'asc') {
+                return priceA - priceB;
+            } else {
+                return priceB - priceA;
             }
         });
 
