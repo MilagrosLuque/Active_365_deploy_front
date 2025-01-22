@@ -430,7 +430,7 @@ const UsersSection: React.FC = () => {
       renderActions={(user) => (
         <div className="flex gap-2">
           <button
-            onClick={() => handleChangeStatus(user.id)}
+            onClick={() => handleChangeStatus(user.id.toString())}//linea del error
             className={`px-4 py-2 text-white font-semibold rounded ${
               user.status === "active"
                 ? "bg-red-500 hover:bg-red-600"
@@ -440,7 +440,7 @@ const UsersSection: React.FC = () => {
             {user.status === "active" ? "Deactivate" : "Activate"}
           </button>
           <button
-            onClick={() => handleSetAdmin(user.id)}
+            onClick={() => handleSetAdmin(user.id.toString())}
             className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
           >
             Make Admin
