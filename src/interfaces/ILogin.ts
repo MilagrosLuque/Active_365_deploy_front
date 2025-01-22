@@ -32,6 +32,15 @@ export interface IAppointment {
     time: string; // Puede ser un string tipo "HH:mm:ss" o similar
   }
 
+  //revisar que estos sean los datos de IORDER
+  interface IOrder {
+    id: string;
+    productName: string;
+    quantity: number;
+    price: number;
+    date: string;
+  }
+
 export interface IUserSession {
     token: string;
     user: {
@@ -50,7 +59,7 @@ export interface IUserSession {
       membershipExpiresAt: string | null; // Puede ser null si no hay una membresía activa
       gym: string | null; // Puede ser null si no está asociado a un gimnasio
       appointments: IAppointment[]; 
-      orders: any[]; // Cambiar `any` si hay una estructura definida para las órdenes
+      orders: IOrder[]; 
       /*reviews: any[]; // Cambiar `any` si hay una estructura definida para las reseñas
       reviewsGyms: any[]; // Cambiar `any` si hay una estructura definida para las reseñas de gimnasios*/
     };
