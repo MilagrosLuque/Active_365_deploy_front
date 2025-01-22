@@ -1,7 +1,6 @@
-"use client"
-
-//import { UserContext } from '@/context/UserContext';
-import React, { useState, useEffect, /*useContext*/ } from 'react';
+/*"use client"
+import { UserContext } from '@/context/UserContext';
+import React, { useState, useEffect, useContext } from 'react';
 
 // Obtener el token de las cookies
 function getTokenFromCookies() {
@@ -16,7 +15,7 @@ function getTokenFromCookies() {
   return loginData.token || null;
 }
 
-/*const Classes: React.FC<{
+const Classes: React.FC<{
   name: string;
   gymId: string;
 }> = ({ name, gymId }) => {
@@ -158,7 +157,7 @@ function getTokenFromCookies() {
       </div>
     </div>
   );
-};*/
+};
 
 const About: React.FC = () => {
   const [gyms, setGyms] = useState<{
@@ -199,14 +198,16 @@ const About: React.FC = () => {
     <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold text-center mb-6">Our Gym Classes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {gyms.map((/*gym*/) => (
-          <></>
-          /*<Classes key={gym.id} gymId={gym.id} name={gym.name} />*/
+        {gyms.map((gym) => (
+          
+          <Classes key={gym.id} gymId={gym.id} name={gym.name} />
         ))}
       </div>
     </div>
   );
 };
 
-export default About;
+export default About;*/
+
+
 
