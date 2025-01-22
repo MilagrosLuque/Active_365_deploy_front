@@ -430,7 +430,7 @@ const UsersSection: React.FC = () => {
       renderActions={(user) => (
         <div className="flex gap-2">
           <button
-            onClick={() => handleChangeStatus(user.id, user.status)}
+            onClick={() => handleChangeStatus(user.id)}
             className={`px-4 py-2 text-white font-semibold rounded ${
               user.status === "active"
                 ? "bg-red-500 hover:bg-red-600"
@@ -450,6 +450,7 @@ const UsersSection: React.FC = () => {
     />
   );
 };
+
 
 
 
