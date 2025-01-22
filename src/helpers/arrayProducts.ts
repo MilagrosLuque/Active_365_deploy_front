@@ -1,4 +1,4 @@
-import { CategoryName } from "@/app/products/page";
+/*import { CategoryName } from "@/app/products/page";
 import { IProducts } from "@/interfaces/IProducts";
 
 
@@ -98,4 +98,4 @@ export const categories: ICategory[] = [
     id: 3,
     name: "Supplements",  // Usar el valor de CategoryName
   },
-];
+];*/
