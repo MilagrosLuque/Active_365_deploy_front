@@ -6,6 +6,7 @@ import { CategoryName, IProducts } from "@/interfaces/IProducts";
 import { getUsers, setAdmin, toggleUser } from "../api/getUsers";
 import AddProductForm from "@/components/AddProductForm";
 import toast from "react-hot-toast";
+import { IUserSession } from "@/interfaces/ILogin";
 
 
 //import { IUserSession } from "@/interfaces/ILogin";
@@ -353,7 +354,7 @@ const ProductsSection: React.FC = () => {
 };
 
 const UsersSection: React.FC = () => {
-  const [users, setUsers] = useState<unknown[]>([]);
+  const [users, setUsers] = useState<IUserSession["user"][]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
@@ -381,7 +382,7 @@ const UsersSection: React.FC = () => {
       if (updatedUser) {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === id ? { ...user, status: updatedUser.status } : user
+            user.id === id ? { ...user , status: updatedUser.status} : user//linea donde esta el error
           )
         );
         toast.success(`User status updated to ${updatedUser.status}`);
