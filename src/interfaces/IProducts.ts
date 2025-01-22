@@ -19,4 +19,5 @@ export interface IProducts {
     category?: CategoryName;
     quantity?: number;
     status?: string;
+//agrgar reviews
 }

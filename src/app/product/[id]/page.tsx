@@ -77,7 +77,7 @@ const Detail = () => {
 
           <AddToCart product={product} isUserLoggedIn={isUserLoggedIn} />
 
-          {/* Sección de reseñas */}
+          {/* Sección de reseñas
           <div className="mt-8">
             <h3 className="text-xl font-semibold text-white mb-4">Reviews</h3>
             {product.reviews && product.reviews.length > 0 ? (
@@ -105,7 +105,9 @@ const Detail = () => {
               <p className="text-gray-500">No reviews yet.</p>
             )}
           </div>
+          */}
         </div>
+        
 
         {/* Sección de planes de entrenamiento */}
         <div className="lg:w-1/4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg shadow-md p-6">
