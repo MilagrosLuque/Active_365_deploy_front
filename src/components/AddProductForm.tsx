@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { addProduct } from "@/app/api/getProducts"; 
+import { CategoryName } from "@/interfaces/IProducts";
 
 const AddProductForm: React.FC = () => {
   const [name, setName] = useState("");
@@ -12,8 +13,8 @@ const AddProductForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const productData = { name, category, price, stock, description };
-    const result = await addProduct(productData);
+    const productData = { name, category: category as CategoryName, price, stock, description };
+    const result = await addProduct(productData);//linea con el error
     if (result.success) {
       setSuccess("Product added successfully!");
       setName("");
