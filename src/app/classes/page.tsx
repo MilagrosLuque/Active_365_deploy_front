@@ -1,7 +1,7 @@
 "use client"
 
-/*import { UserContext } from '@/context/UserContext';
-import React, { useState, useEffect, useContext } from 'react';
+//import { UserContext } from '@/context/UserContext';
+import React, { useState, useEffect, /*useContext*/ } from 'react';
 
 // Obtener el token de las cookies
 function getTokenFromCookies() {
@@ -16,7 +16,7 @@ function getTokenFromCookies() {
   return loginData.token || null;
 }
 
-const Classes: React.FC<{
+/*const Classes: React.FC<{
   name: string;
   gymId: string;
 }> = ({ name, gymId }) => {
@@ -158,7 +158,7 @@ const Classes: React.FC<{
       </div>
     </div>
   );
-};
+};*/
 
 const About: React.FC = () => {
   const [gyms, setGyms] = useState<{
@@ -199,75 +199,14 @@ const About: React.FC = () => {
     <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold text-center mb-6">Our Gym Classes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {gyms.map((gym) => (
-          <Classes key={gym.id} gymId={gym.id} name={gym.name} />
+        {gyms.map((/*gym*/) => (
+          <></>
+          /*<Classes key={gym.id} gymId={gym.id} name={gym.name} />*/
         ))}
       </div>
     </div>
   );
 };
 
-export default About;*/
-
-"use client";
-
-import { useEffect, useState } from "react";
-
-const getTokenFromCookies = () => {
-  if (typeof document !== "undefined") {  // Asegurar ejecución en cliente
-    const cookies = document.cookie.split("; ");
-    const loginDataCookie = cookies.find(cookie => cookie.startsWith("loginData="));
-    if (!loginDataCookie) return null;
-    const cookieValue = loginDataCookie.split("=")[1];
-    const loginData = JSON.parse(decodeURIComponent(cookieValue));
-    return loginData.token || null;
-  }
-  return null;
-};
-
-export default function ClassesPage({ gymId }: { gymId: string }) {
-  const [classes, setClasses] = useState<{ id: string; name: string; time: string }[]>([]);
-  const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
-  const [errorClasses, setErrorClasses] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    setToken(getTokenFromCookies());
-  }, []);
-
-  useEffect(() => {
-    if (!token) return;
-    
-    const fetchClasses = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes?gymId=${gymId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!response.ok) throw new Error("Error fetching classes");
-        const data = await response.json();
-        setClasses(data);
-      } catch {
-        setErrorClasses("Failed to load classes");
-      } finally {
-        setLoadingClasses(false);
-      }
-    };
-
-    fetchClasses();
-  }, [gymId, token]);
-
-  if (loadingClasses) return <p>Loading classes...</p>;
-  if (errorClasses) return <p>{errorClasses}</p>;
-
-  return (
-    <div>
-      <h1>Classes</h1>
-      <ul>
-        {classes.map((classItem) => (
-          <li key={classItem.id}>{classItem.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+export default About;
 
