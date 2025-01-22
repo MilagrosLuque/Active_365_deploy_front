@@ -30,8 +30,18 @@ const categoryImages: Record<string, string> = {
   const Products: React.FC<ProductsProps> = ({ searchQuery }) => {*/
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-const Products: React.FC = () => { 
+//me tiraba error si no agregaba suspense
+const Products: React.FC = () => {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ProductsContent />
+        </Suspense>
+    );
+};
+
+const ProductsContent: React.FC = () => { 
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('searchQuery') || '';
     //hasta aca es codigo nuevo
