@@ -28,8 +28,10 @@ const ProfileSection: React.FC = () => {
         address: userSession.user.address || "",
         email: userSession.user.email || "",
         city: userSession.user.city || "",
-        height: userSession.user.height || "",
-        weight: userSession.user.weight || "",
+        //height: userSession.user.height || "",//linea con error deploy
+        //weight: userSession.user.weight || "",//linea con error 
+        height: userSession.user.height ? userSession.user.height.toString() : "", // Conversión a string
+        weight: userSession.user.weight ? userSession.user.weight.toString() : "", // Conversión a string
       });
     }
   }, [userSession]);

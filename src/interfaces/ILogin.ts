@@ -25,6 +25,12 @@ export interface ILoginErrors {
         role: string;
     }
 }*/
+export interface IAppointment {
+    id: string;
+    status: string;
+    date: string; // O Date, dependiendo de cómo lo manejes en tu backend
+    time: string; // Puede ser un string tipo "HH:mm:ss" o similar
+  }
 
 export interface IUserSession {
     token: string;
@@ -43,9 +49,9 @@ export interface IUserSession {
       createdAt: string;
       membershipExpiresAt: string | null; // Puede ser null si no hay una membresía activa
       gym: string | null; // Puede ser null si no está asociado a un gimnasio
-      /*appointments: any[]; // Cambiar `any` si hay una estructura definida para las citas
+      appointments: IAppointment[]; 
       orders: any[]; // Cambiar `any` si hay una estructura definida para las órdenes
-      reviews: any[]; // Cambiar `any` si hay una estructura definida para las reseñas
+      /*reviews: any[]; // Cambiar `any` si hay una estructura definida para las reseñas
       reviewsGyms: any[]; // Cambiar `any` si hay una estructura definida para las reseñas de gimnasios*/
     };
   }
