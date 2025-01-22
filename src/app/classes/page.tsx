@@ -1,6 +1,6 @@
-'use client';
+"use client"
 
-import { UserContext } from '@/context/UserContext';
+/*import { UserContext } from '@/context/UserContext';
 import React, { useState, useEffect, useContext } from 'react';
 
 // Obtener el token de las cookies
@@ -126,12 +126,12 @@ const Classes: React.FC<{
 
   return (
     <div className="max-w-sm mx-auto mb-8 bg-yellow-300 rounded-lg shadow-lg p-6">
-      {/* Nombre del gimnasio */}
+      
       <div className="bg-yellow-500 text-white text-xl font-bold text-center p-4 rounded-t-lg">
         {name}
       </div>
 
-      {/* Clases del gimnasio */}
+      
       <div className="mt-4 p-4 bg-yellow-200 rounded-lg border border-gray-300">
         <h3 className="text-sm font-semibold text-gray-800">Classes:</h3>
         {loadingClasses ? (
@@ -207,4 +207,67 @@ const About: React.FC = () => {
   );
 };
 
-export default About;
+export default About;*/
+
+"use client";
+
+import { useEffect, useState } from "react";
+
+const getTokenFromCookies = () => {
+  if (typeof document !== "undefined") {  // Asegurar ejecución en cliente
+    const cookies = document.cookie.split("; ");
+    const loginDataCookie = cookies.find(cookie => cookie.startsWith("loginData="));
+    if (!loginDataCookie) return null;
+    const cookieValue = loginDataCookie.split("=")[1];
+    const loginData = JSON.parse(decodeURIComponent(cookieValue));
+    return loginData.token || null;
+  }
+  return null;
+};
+
+export default function ClassesPage({ gymId }: { gymId: string }) {
+  const [classes, setClasses] = useState<{ id: string; name: string; time: string }[]>([]);
+  const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
+  const [errorClasses, setErrorClasses] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setToken(getTokenFromCookies());
+  }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    
+    const fetchClasses = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes?gymId=${gymId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error("Error fetching classes");
+        const data = await response.json();
+        setClasses(data);
+      } catch {
+        setErrorClasses("Failed to load classes");
+      } finally {
+        setLoadingClasses(false);
+      }
+    };
+
+    fetchClasses();
+  }, [gymId, token]);
+
+  if (loadingClasses) return <p>Loading classes...</p>;
+  if (errorClasses) return <p>{errorClasses}</p>;
+
+  return (
+    <div>
+      <h1>Classes</h1>
+      <ul>
+        {classes.map((classItem) => (
+          <li key={classItem.id}>{classItem.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
