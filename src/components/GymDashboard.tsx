@@ -12,12 +12,14 @@ type GymClass = {
 };
 
 const GymDashboard: React.FC = () => {
-        const userSession = useContext(UserContext);
+  const userSession = useContext(UserContext);
     
   const [gymClasses, setGymClasses] = useState<GymClass[]>([]);
   const [isClassSectionOpen, setIsClassSectionOpen] = useState(false);
   const [newClass, setNewClass] = useState({ name: "", description: "" });
-  const gymId = userSession.userSession?.data?.gym 
+  //const gymId = userSession.userSession?.data?.gym
+  //puse esta linea para que no rompa el deploy porque no existe la propiedad data en userSession y se rompia
+  const gymId = userSession.userSession
   const APIURL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
