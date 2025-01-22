@@ -209,5 +209,11 @@ const About: React.FC = () => {
 
 export default About;*/
 
+function ClassesPage() {
+  return(<>
+  <h1>pagina de prueba para ver si rompe por el codigo completo de classes</h1>
+  </>)
+}
 
+export default ClassesPage
 
