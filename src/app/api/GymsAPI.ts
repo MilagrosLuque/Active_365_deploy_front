@@ -26,7 +26,6 @@ export async function fetchGyms() {
   }
 }
 
-
 //obtener el token 
 function getTokenFromCookies() {
   const cookies = document.cookie.split("; ");

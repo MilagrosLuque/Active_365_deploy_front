@@ -1,6 +1,5 @@
-import { CategoryName } from "@/app/products/page";
 import { IProducts } from "@/interfaces/IProducts";
-
+export type CategoryName = "Fitness Equipment" | "Yoga Accessories" | "Supplements";
 
 // Define el array de productos con el tipo de IProducts
 export const arrayProducts: IProducts[] = [
@@ -11,7 +10,7 @@ export const arrayProducts: IProducts[] = [
     price: 30,
     stock: 50,
     imgUrl: "https://m.media-amazon.com/images/I/81Ks1unc9GL._AC_SL1500_.jpg",
-    category: "Fitness Equipment",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
   {
     id: 2,
@@ -20,7 +19,7 @@ export const arrayProducts: IProducts[] = [
     price: 80,
     stock: 20,
     imgUrl: "https://m.media-amazon.com/images/I/71gbrEOHVTL._AC_UF894,1000_QL80_.jpg",
-    category: "Fitness Equipment",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
   {
     id: 3,
@@ -29,7 +28,7 @@ export const arrayProducts: IProducts[] = [
     price: 25,
     stock: 100,
     imgUrl: "https://m.media-amazon.com/images/I/61qQkHyJnEL._AC_UF1000,1000_QL80_.jpg",
-    category: "Yoga Accessories",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
   {
     id: 4,
@@ -38,7 +37,7 @@ export const arrayProducts: IProducts[] = [
     price: 50,
     stock: 40,
     imgUrl: "https://farmacityar.vtexassets.com/arquivos/ids/243162/143033_suplemento-dietario-whey-protein-sabor-vainilla-en-polvo-x-1000-g__imagen-1.jpg?v=638211443455570000",
-    category: "Supplements",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
   {
     id: 5,
@@ -47,7 +46,7 @@ export const arrayProducts: IProducts[] = [
     price: 35,
     stock: 60,
     imgUrl: "https://m.media-amazon.com/images/I/71UelFPbbUL._AC_SL1500_.jpg",
-    category: "Supplements",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
   {
     id: 6,
@@ -56,7 +55,7 @@ export const arrayProducts: IProducts[] = [
     price: 15,
     stock: 80,
     imgUrl: "https://m.media-amazon.com/images/I/71IvvnKBSpL.jpg",
-    category: "Fitness Equipment",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
   {
     id: 7,
@@ -65,7 +64,7 @@ export const arrayProducts: IProducts[] = [
     price: 20,
     stock: 30,
     imgUrl: "https://acdn.mitiendanube.com/stores/002/293/786/products/acf173-ne-f-7c8aa5c1d4551af31517224549250827-1024-1024.jpg",
-    category: "Yoga Accessories",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
   {
     id: 8,
@@ -74,7 +73,7 @@ export const arrayProducts: IProducts[] = [
     price: 10,
     stock: 150,
     imgUrl: "https://m.media-amazon.com/images/I/71M-2PGXa5L._AC_UF1000,1000_QL80_.jpg",
-    category: "Supplements",  // Usar el valor de CategoryName
+    category: "other",  // Usar el valor de CategoryName
   },
 ];
 

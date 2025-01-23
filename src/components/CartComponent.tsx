@@ -6,17 +6,29 @@ import { UserContext } from "@/context/UserContext";
 import { getTokenFromCookies } from "@/app/api/getUsers";
 
 const CartComponent: React.FC = () => {
+
     const { userSession } = useContext(UserContext)
-    const { cart, removeFromCart, clearCart } = useContext(GeneralContext);
-    const user = useContext(UserContext);
+    const { removeFromCart, clearCart } = useContext(GeneralContext);
+
+    const { cart }= useContext(GeneralContext);
+    //lo comente porque no se estaba usando user
+    //const user = useContext(UserContext);
     const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
     const isMember = true;
     const shippingCost = isMember ? 0 : 10;
 
+    /*const totalProductsPrice = cart.reduce((total, item) => {
+        const quantity = quantities[item.id] || 1;//linea con el error
+        return total + item.price * quantity;//linea con el error
+    }, 0);*/
+
+    //nuevo codigo para deploy
     const totalProductsPrice = cart.reduce((total, item) => {
         const quantity = quantities[item.id] || 1;
-        return total + item.price * quantity;
+        const price = item.price ?? 0;
+        return total + price * quantity;
     }, 0);
+    
 
     const totalPrice = totalProductsPrice + shippingCost;
 
@@ -49,7 +61,7 @@ const CartComponent: React.FC = () => {
                     userId,
                     products: cart.map(item => ({
                         productId: item.id,
-                        quantity: quantities[item.id] || 1,
+                        quantity: quantities[item.id] || 1,//linea con error
                     })),
                 }),
             });
@@ -114,11 +126,11 @@ const CartComponent: React.FC = () => {
                                 <div className="flex items-center mt-2">
                                     <button
                                         onClick={() => {
-                                            const currentQty = quantities[item.id] || 1;
+                                            const currentQty = quantities[item.id] || 1;//linea con error
                                             if (currentQty > 1) {
                                                 setQuantities({
                                                     ...quantities,
-                                                    [item.id]: currentQty - 1,
+                                                    [item.id]: currentQty - 1,//linea con error
                                                 });
                                             }
                                         }}
@@ -128,13 +140,13 @@ const CartComponent: React.FC = () => {
                                     </button>
                                     <input
                                         type="number"
-                                        value={quantities[item.id] || 1}
+                                        value={quantities[item.id] || 1}//linea con error
                                         onChange={(e) =>
                                             setQuantities({
                                                 ...quantities,
-                                                [item.id]: Math.max(
+                                                [item.id]: Math.max(//linea con error
                                                     1,
-                                                    Math.min(parseInt(e.target.value, 10) || 1, item.stock)
+                                                    Math.min(parseInt(e.target.value, 10) || 1, item.stock)//linea con error
                                                 ),
                                             })
                                         }
@@ -142,11 +154,11 @@ const CartComponent: React.FC = () => {
                                     />
                                     <button
                                         onClick={() => {
-                                            const currentQty = quantities[item.id] || 1;
-                                            if (currentQty < item.stock) {
+                                            const currentQty = quantities[item.id] || 1;//linea con error
+                                            if (currentQty < item.stock) {//linea con error
                                                 setQuantities({
                                                     ...quantities,
-                                                    [item.id]: currentQty + 1,
+                                                    [item.id]: currentQty + 1,//linea con error
                                                 });
                                             }
                                         }}
@@ -157,7 +169,7 @@ const CartComponent: React.FC = () => {
                                 </div>
                             </div>
                             <button
-                                onClick={() => removeFromCart(item.id.toString())}
+                                onClick={() => removeFromCart(item.id.toString())}//linea con error
                                 className="ml-4 text-red-600 hover:text-red-700 text-sm flex items-center space-x-1"
                             >
                                 <span>Delete</span>

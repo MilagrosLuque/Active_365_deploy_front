@@ -10,7 +10,7 @@ const DetailCard: React.FC<IProducts> = ({
     price,
     stock,
     imgUrl,
-    category,
+    //category,
 }) => {
 
     return (
@@ -34,10 +34,13 @@ const DetailCard: React.FC<IProducts> = ({
                 <h4 className={styles["stock"]}>
                     <strong>Stock:</strong> {stock}
                 </h4>
+                
+                {/*
+                category rompe el codigo 
                 <h4 className={styles["category"]}>
                     <strong>Category:</strong>{" "}
                     {typeof category === "object" ? category?.name : category || "Unknown"}
-                </h4>
+                </h4>*/}
 
                 <Link
                     href="/products"

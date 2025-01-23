@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { addProduct } from "@/app/api/getProducts"; 
+import { CategoryName } from "@/interfaces/IProducts";
 
 const AddProductForm: React.FC = () => {
   const [name, setName] = useState("");
@@ -12,17 +13,24 @@ const AddProductForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const productData = { name, category, price, stock, description };
+    const productData = { 
+        id: 0,  // Valor ficticio, será reemplazado por el backend
+        name, 
+        category: category as CategoryName, 
+        price, 
+        stock, 
+        description 
+    };
     const result = await addProduct(productData);
     if (result.success) {
-      setSuccess("Product added successfully!");
-      setName("");
-      setCategory("");
-      setPrice(0);
-      setStock(0);
-      setDescription("");
+        setSuccess("Product added successfully!");
+        setName("");
+        setCategory("");
+        setPrice(0);
+        setStock(0);
+        setDescription("");
     }
-  };
+};
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded-lg mb-6">

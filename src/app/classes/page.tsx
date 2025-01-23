@@ -1,5 +1,4 @@
-'use client';
-
+/*"use client"
 import { UserContext } from '@/context/UserContext';
 import React, { useState, useEffect, useContext } from 'react';
 
@@ -126,12 +125,12 @@ const Classes: React.FC<{
 
   return (
     <div className="max-w-sm mx-auto mb-8 bg-yellow-300 rounded-lg shadow-lg p-6">
-      {/* Nombre del gimnasio */}
+      
       <div className="bg-yellow-500 text-white text-xl font-bold text-center p-4 rounded-t-lg">
         {name}
       </div>
 
-      {/* Clases del gimnasio */}
+      
       <div className="mt-4 p-4 bg-yellow-200 rounded-lg border border-gray-300">
         <h3 className="text-sm font-semibold text-gray-800">Classes:</h3>
         {loadingClasses ? (
@@ -200,6 +199,7 @@ const About: React.FC = () => {
       <h1 className="text-2xl font-bold text-center mb-6">Our Gym Classes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {gyms.map((gym) => (
+          
           <Classes key={gym.id} gymId={gym.id} name={gym.name} />
         ))}
       </div>
@@ -207,4 +207,13 @@ const About: React.FC = () => {
   );
 };
 
-export default About;
+export default About;*/
+
+function ClassesPage() {
+  return(<>
+  <h1>pagina de prueba para ver si rompe por el codigo completo de classes</h1>
+  </>)
+}
+
+export default ClassesPage
+

@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/context/UserContext";
+import { IAppointment } from "@/interfaces/ILogin";
 
 const MyClasses: React.FC = () => {
   const { userSession } = useContext(UserContext);
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState<IAppointment[]>([]);
 
   useEffect(() => {
     if (userSession && userSession.user && userSession.user.appointments) {
