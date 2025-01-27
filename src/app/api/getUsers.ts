@@ -1,3 +1,4 @@
+import { IUserUpdate } from "@/interfaces/ILogin";
 import { toast } from "react-hot-toast";
 
 
@@ -120,6 +121,52 @@ export async function setAdmin(userId: string) {
       return null;
     }
 }
+
+//diferente respuesta, texto plano
+export async function updateUser(userId: string, userData: IUserUpdate) {
+  const token = getTokenFromCookies();
+
+  if (!token) {
+    toast.error("No token found in cookies");
+    return null;
+  }
+
+  try {
+    const res = await fetch(`${APIURL}/users/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(userData),
+    });
+
+    // Verificar si la respuesta es JSON o texto
+    const contentType = res.headers.get("content-type");
+
+    if (!res.ok) {
+      const errorMessage = contentType?.includes("application/json")
+        ? (await res.json()).message || "Error updating user data"
+        : await res.text(); // Manejo de respuestas en texto plano
+      throw new Error(errorMessage);
+    }
+
+    const responseData = contentType?.includes("application/json")
+      ? await res.json()
+      : await res.text(); // Manejo para texto plano en respuesta exitosa
+
+    toast.success("User updated successfully!");
+    return responseData;
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    toast.error(errorMessage || "Failed to update user data.");
+    return null;
+  }
+}
+
+
+
 
 export default getUsers;
 
