@@ -65,4 +65,12 @@ export interface IUserSession {
     };
   }
   
-
+  export interface IUserUpdate {
+    name?: string;
+    phone?: string;
+    address?: string;
+    email?: string;
+    city?: string;
+    height?: number;
+    weight?: number;
+  }
